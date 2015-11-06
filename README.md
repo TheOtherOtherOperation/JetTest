@@ -39,13 +39,13 @@ This README assumes a Python 3 interpreter name of "python" in all examples. How
 
 JetEdit takes a Jetstress XML configuration file, typically generated using the Jetstress GUI. It allows for easy modification of a few key parameters.
 
-When using NetTest, JetEdit configuration is handled automatically by NetTest. A sample configuration file must be provided.
+When using JetTest, JetEdit configuration is handled automatically by JetTest. A sample configuration file must be provided.
 
 ### NetJobs
 
 NetJobs consists of two components: the control center or client, NetJobs.py; and the agent server, NetJobsAgent.py. NetJobsAgent.py runs as a blocking, CLI-based server, which listens for connections from the control center and runs jobs on its behalf. NetJobs.py takes a configuration file and causes all specified agents to run independent jobs. Please see the NetJobs README for more detailed information.
 
-When running JetTest, NetJobs client configuration is handled automatically by NetTest. However, NetJobsAgent.py must be running on all target machines.
+When running JetTest, NetJobs client configuration is handled automatically by JetTest. However, NetJobsAgent.py must be running on all target machines.
 
 ### JetTest
 
