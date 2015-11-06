@@ -1,0 +1,12 @@
+sharepath: "Z:\JetTestShare"
+jetstressconfig: "Z:\JetTestShare\NewConfig2.xml"
+jetstressexe: "C:\Program Files\Exchange Jetstress\JetstressCmd.exe"
+mailboxes: 100
+iops: 0.5
+mailboxes: 200
+iops: 0.25
+duration: 15
+timeout: 1200
+targets:
+172.17.3.40
+172.17.3.97
