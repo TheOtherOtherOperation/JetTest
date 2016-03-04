@@ -3,14 +3,14 @@
 # ############################################################################ #
 # NetJobsAgent - agent server for the NetJobs job synchronizer.                #
 #                                                                              #
-# Copyright (c) 2015 DeepStorage, LLC (deepstorage.net)                        #
+# Copyright (c) 2015 DeepStorage, LLC (deepstorage.net)                        # 
 #     and Ramon A. Lovato (ramonalovato.com).                                  #
 #                                                                              #
 # See the file LICENSE for copying permission.                                 #
 #                                                                              #
 # Author: Ramon A. Lovato (ramonalovato.com)                                   #
 # For: Deepstorage, LLC (deepstorage.net)                                      #
-# Version: 2.1                                                                 #
+# Version: 2.3                                                                 #
 #                                                                              #
 # Usage: NetJobsAgent.py                                                       #
 #                                                                              #
@@ -39,6 +39,8 @@ READY_STRING = '// READY //'
 START_STRING = '// START //'
 KILL_STRING = '// KILL //'
 DONE_STRING = '// DONE //'
+PING_STATUS_STRING = '// STATUS //'
+PING_OK_STRING = 'OK'
 SUCCESS_STATUS = 'SUCCESS'
 ERROR_STATUS = 'ERROR'
 TIMEOUT_STATUS = 'TIMEOUT'
@@ -206,6 +208,10 @@ def main():
         # Listen for go command.
         sosThread.start()
 
+        # Block until sosThread has finished starting.
+        while not sosThread.started:
+            time.sleep(0) # Yield.
+
         # Block until all subprocesses complete.
         for t in subthreads:
             t.join()
@@ -246,6 +252,7 @@ class SOSThread(threading.Thread):
         self.timeout = timeout
         self.commandsList = commandsList
         self.timeoutsList = timeoutsList
+        self.started = False
 
     def run(self):
         self.running = True
@@ -258,9 +265,10 @@ class SOSThread(threading.Thread):
                     break
 
                 ready = select.select([self.sock], [], [], SELECT_TIMEOUT)
+                
                 if ready[0]:
                     buffer = self.sock.recv(BUFFER_SIZE)
-
+                
                     if buffer:
                         commands = buffer.decode('UTF-8').split('\n')
                         commands = filter(None, commands)
@@ -268,9 +276,13 @@ class SOSThread(threading.Thread):
                             if command == START_STRING:
                                 print('Start command received. Beginning run...')
                                 start_run(self.sock, self.commandsList, self.timeoutsList)
+                                self.started = True
                             elif command == KILL_STRING:
                                 print('Run killed by remote client.')
                                 self.stop_and_kill_run()
+                            elif command == PING_STATUS_STRING:
+                                print('Status ping received.')
+                                self.sock.sendall(bytes(PING_OK_STRING + '\n', 'UTF-8'))
                             else:
                                 print('Unknown command received from client:' % command)
         except:
